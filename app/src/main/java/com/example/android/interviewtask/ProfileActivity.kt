@@ -30,17 +30,17 @@ class ProfileActivity : AppCompatActivity() {
         // define a listener
         val listener = object : ValueEventListener {
             //specify what to do when data is fetched successfully
-            override fun onDataChange(snapshot: DataSnapshot?) {
+            override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d( TAG, "successfully fetched user profile" )
                 // Construct a Person object
-                val person = snapshot?.getValue(Person::class.java)
+                val person = snapshot.getValue(Person::class.java)
 
                 // updat UI with person profile info
                 updateUI( person )
             }
 
             // specify what to do when a failure occurs while fetching data
-            override fun onCancelled(error: DatabaseError?) {
+            override fun onCancelled(error: DatabaseError) {
                 Log.d( TAG, "Error occurs while fetching user profile" )
                 // show error message for the user
                 showErrorMessage()

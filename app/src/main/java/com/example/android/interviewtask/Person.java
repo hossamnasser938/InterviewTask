@@ -5,6 +5,10 @@ public class Person {
     private String name;
     private String info;
 
+    Person() {
+        // no-arg constructor required for fire-base
+    }
+
     Person( String name, String info ) {
         this.name = name;
         this.info = info;
