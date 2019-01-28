@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:scaleType="center"
-            android:src="@drawable/person-placeholder" />
+            android:src="@drawable/person_placeholder" />
 
         <TextView
             android:id="@+id/person_name"
