@@ -29,7 +29,8 @@ class SignInActivity : AppCompatActivity() {
         }
         else {  // user is already signed in
             Log.d( TAG, "current user is not null" )
-            // TODO: navigate to profile activity
+            // navigate to profile activity
+            navigateToProfile()
         }
     }
 
@@ -45,7 +46,8 @@ class SignInActivity : AppCompatActivity() {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
 
-                // TODO: navigate to profile activity
+                // navigate to profile activity
+                navigateToProfile()
             } else {
                 Log.d( TAG, "result code is not OK" )
                 // Sign in failed
@@ -65,5 +67,12 @@ class SignInActivity : AppCompatActivity() {
                         .setAvailableProviders(providers)
                         .build(),
                 RC_SIGN_IN)
+    }
+
+    private fun navigateToProfile() {
+        val intent = Intent(this, ProfileActivity::class.java)
+        // clear tasks in back stack to avoid getting back to login activity by hitting back button
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 }
