@@ -2,4 +2,10 @@
     <string name="app_name">InterviewTask</string>
     <string name="sign_out">Sign Out</string>
     <string name="update_phone_number">Update Phone Number</string>
+    <string name="enter_old_number">Enter Old Phone Number</string>
+    <string name="enter_new_number">Enter New Phone Number</string>
+    <string name="check">Check</string>
+    <string name="update">Update</string>
+    <string name="enter_number">Enter Number</string>
+    <string name="wrong_number">Wrong Number</string>
 </resources>
