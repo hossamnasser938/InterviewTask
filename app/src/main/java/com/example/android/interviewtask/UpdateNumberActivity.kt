@@ -148,12 +148,21 @@ class UpdateNumberActivity : AppCompatActivity() {
         // define the callback
         verificationCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-            override fun onVerificationCompleted(p0: PhoneAuthCredential?) {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential?) {
                 Log.d( TAG, "onVerificationCompleted" )
+                if ( credential != null ) {
+                    performUpdate(credential)
+                }
+                else {
+                    hideLodingPB()
+                    showFailureUpdate()
+                }
             }
 
             override fun onVerificationFailed(p0: FirebaseException?) {
                 Log.d( TAG, "onVerificationFailed" )
+                hideLodingPB()
+                showFailureUpdate()
             }
 
             override fun onCodeSent(id: String?, token: PhoneAuthProvider.ForceResendingToken?) {
@@ -164,6 +173,8 @@ class UpdateNumberActivity : AppCompatActivity() {
 
                 // set the flag to reflect the progress state
                 verificationInProgress = true
+
+                hideLodingPB()
 
                 showVerificationCodeLayout()
             }
@@ -176,10 +187,14 @@ class UpdateNumberActivity : AppCompatActivity() {
                 TimeUnit.SECONDS, // Unit of timeout
                 this,             // Activity (for callback binding)
                 verificationCallback) // OnVerificationStateChangedCallbacks
+
+        showLodingPB()
     }
 
     private fun handleVerifyCodeButton() {
         verify_verifiction_code_btn.setOnClickListener {
+            showLodingPB()
+
             hideErrorVerificationCode()
 
             val codeEntered = verification_code_edit_text.text.toString()
@@ -192,13 +207,19 @@ class UpdateNumberActivity : AppCompatActivity() {
             // construct the credential
             val phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId!!, codeEntered)
 
-            currentUser?.updatePhoneNumber(phoneAuthCredential)?.addOnSuccessListener {
-                Log.d( TAG, "successful update" )
-                showSuccessUpdate()
-            }?.addOnFailureListener {
-                Log.d( TAG, "failed to update" )
-                showFailureUpdate()
-            }
+            performUpdate(phoneAuthCredential)
+        }
+    }
+
+    private fun performUpdate(phoneAuthCredential: PhoneAuthCredential) {
+        currentUser?.updatePhoneNumber(phoneAuthCredential)?.addOnSuccessListener {
+            Log.d(TAG, "successful update")
+            hideLodingPB()
+            showSuccessUpdate()
+        }?.addOnFailureListener {
+            Log.d(TAG, "failed to update")
+            hideLodingPB()
+            showFailureUpdate()
         }
     }
 
@@ -256,5 +277,13 @@ class UpdateNumberActivity : AppCompatActivity() {
     private fun showFailureUpdate() {
         showErrorOnVerificationCode( R.string.failure_update )
         verification_code_error_text.setTextColor( Color.RED )
+    }
+
+    private fun showLodingPB() {
+        update_PB.visibility = View.VISIBLE
+    }
+
+    private fun hideLodingPB() {
+        update_PB.visibility = View.GONE
     }
 }

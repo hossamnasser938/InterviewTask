@@ -115,4 +115,11 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/update_PB"
+        android:layout_width="@dimen/default_PB"
+        android:layout_height="@dimen/default_PB"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>
