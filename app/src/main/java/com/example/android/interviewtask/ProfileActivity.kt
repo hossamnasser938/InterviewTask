@@ -55,8 +55,13 @@ class ProfileActivity : AppCompatActivity() {
         // get a reference to fire-base real-time database
         database = FirebaseDatabase.getInstance().reference
 
-        // get and show user profile
-        getPersonProfile()
+        if ( Utils.isNetworkConnected( this ) ) {
+            // get and show user profile
+            getPersonProfile()
+        }
+        else {
+            showNoInternet()
+        }
     }
 
     fun getPersonProfile() {
@@ -120,5 +125,10 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun hideLoadingPB() {
         profile_loading_PB.visibility = View.GONE
+    }
+
+    private fun showNoInternet() {
+        person_info.setText(R.string.no_internet)
+        person_info.setTextColor(Color.RED)
     }
 }

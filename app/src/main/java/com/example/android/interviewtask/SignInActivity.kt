@@ -2,6 +2,7 @@ package com.example.android.interviewtask
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,7 @@ import com.example.android.interviewtask.Constants.RC_SIGN_IN
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
 
@@ -24,8 +26,15 @@ class SignInActivity : AppCompatActivity() {
         val currentUser = firebaseAuth.currentUser
         if ( currentUser == null ) {  // user is not signed in
             Log.d( TAG, "current user is null" )
-            // open Firebase UI to let the user sign in
-            openFirebaseAuthUI()
+
+            // check internet connction
+            if ( Utils.isNetworkConnected( this ) ) {
+                // open Firebase UI to let the user sign in
+                openFirebaseAuthUI()
+            }
+            else {
+                showNoInternet()
+            }
         }
         else {  // user is already signed in
             Log.d( TAG, "current user is not null" )
@@ -74,5 +83,10 @@ class SignInActivity : AppCompatActivity() {
         // clear tasks in back stack to avoid getting back to login activity by hitting back button
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
+    }
+
+    private fun showNoInternet() {
+        sign_in_text.text = getString(R.string.no_internet)
+        sign_in_text.setTextColor(Color.RED)
     }
 }
