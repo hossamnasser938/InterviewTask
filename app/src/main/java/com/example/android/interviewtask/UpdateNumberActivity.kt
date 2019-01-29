@@ -150,6 +150,7 @@ class UpdateNumberActivity : AppCompatActivity() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential?) {
                 Log.d( TAG, "onVerificationCompleted" )
+                showVerificationCodeLayout()
                 if ( credential != null ) {
                     performUpdate(credential)
                 }
@@ -161,6 +162,7 @@ class UpdateNumberActivity : AppCompatActivity() {
 
             override fun onVerificationFailed(p0: FirebaseException?) {
                 Log.d( TAG, "onVerificationFailed" )
+                showVerificationCodeLayout()
                 hideLodingPB()
                 showFailureUpdate()
             }
