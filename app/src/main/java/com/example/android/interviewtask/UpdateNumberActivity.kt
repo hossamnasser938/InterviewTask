@@ -2,17 +2,31 @@ package com.example.android.interviewtask
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthProvider
 import kotlinx.android.synthetic.main.activity_update_number.*
+import java.util.concurrent.TimeUnit
 
 class UpdateNumberActivity : AppCompatActivity() {
 
     val TAG = "UpdateNumberActivity"
 
     lateinit var auth: FirebaseAuth
-    var currentUser : FirebaseUser? = null
+    var currentUser: FirebaseUser? = null
+
+    var newNumber: String? = null
+
+    lateinit var verificationCallback: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+
+    var verificationId: String? = null
+    var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
+
+    var verificationInProgress: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +39,42 @@ class UpdateNumberActivity : AppCompatActivity() {
         handleUpdateNewNumberButton()
     }
 
-    fun handleCheckOldNumberButton() {
+    override fun onStart() {
+        super.onStart()
+
+        // check if verification is in progress
+        if( verificationInProgress ) {
+            verifyNumber( newNumber!! )
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        if ( verificationInProgress ) {
+            outState?.putBoolean( Constants.VERRIFICATION_IN_PROGRESS, verificationInProgress )
+        }
+
+        if ( newNumber != null ) {
+            outState?.putString( Constants.NEW_NUMBER, newNumber )
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        if ( savedInstanceState != null ) {
+            if ( savedInstanceState.containsKey(Constants.VERRIFICATION_IN_PROGRESS) ) {
+                verificationInProgress = savedInstanceState.getBoolean(Constants.VERRIFICATION_IN_PROGRESS)
+            }
+
+            if ( savedInstanceState.containsKey(Constants.NEW_NUMBER) ) {
+                newNumber = savedInstanceState.getString(Constants.NEW_NUMBER)
+            }
+        }
+    }
+
+    private fun handleCheckOldNumberButton() {
         check_old_number_btn.setOnClickListener {
             val numberEntered = old_number_edit_text.text.toString()
 
@@ -55,7 +104,7 @@ class UpdateNumberActivity : AppCompatActivity() {
     }
 
 
-    fun handleUpdateNewNumberButton() {
+    private fun handleUpdateNewNumberButton() {
         update_new_number_btn.setOnClickListener {
             val numberEntered = new_number_edit_text.text.toString()
 
@@ -65,7 +114,40 @@ class UpdateNumberActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // TODO: follow the process
+            newNumber = numberEntered
+            verifyNumber( newNumber!! )
+        }
+    }
+
+    private fun verifyNumber( number : String ) {
+        // set the flag to reflect the progress state
+        verificationInProgress = true
+
+        // verify number
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,               // Timeout duration
+                TimeUnit.SECONDS, // Unit of timeout
+                this,             // Activity (for callback binding)
+                verificationCallback) // OnVerificationStateChangedCallbacks
+
+        // define the callback
+        verificationCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            override fun onVerificationCompleted(p0: PhoneAuthCredential?) {
+                Log.d( TAG, "onVerificationCompleted" )
+            }
+
+            override fun onVerificationFailed(p0: FirebaseException?) {
+                Log.d( TAG, "onVerificationFailed" )
+            }
+
+            override fun onCodeSent(id: String?, token: PhoneAuthProvider.ForceResendingToken?) {
+                super.onCodeSent(id, token)
+                Log.d( TAG, "onCodeSent" )
+                verificationId = id
+                resendingToken = token
+            }
         }
     }
 
@@ -74,21 +156,21 @@ class UpdateNumberActivity : AppCompatActivity() {
         old_number_edit_text.isClickable = false
     }
 
-    fun showNewNumberLayout() {
+    private fun showNewNumberLayout() {
         new_number_layout.visibility = View.VISIBLE
     }
 
-    fun showErrorOnOldNumber( stringId: Int ) {
+    private fun showErrorOnOldNumber( stringId: Int ) {
         old_number_error_text.visibility = View.VISIBLE
         old_number_error_text.text = resources.getString( stringId )
     }
 
-    fun showErrorOnNewNumber( stringId: Int ) {
+    private fun showErrorOnNewNumber( stringId: Int ) {
         new_number_error_text.visibility = View.VISIBLE
         new_number_error_text.text = resources.getString( stringId )
     }
 
-    fun hideErrorOldNumber() {
+    private fun hideErrorOldNumber() {
         old_number_error_text.visibility = View.GONE
     }
 
