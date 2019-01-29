@@ -45,6 +45,12 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
 
+        <ProgressBar
+            android:id="@+id/profile_loading_PB"
+            android:layout_width="@dimen/default_PB"
+            android:layout_height="@dimen/default_PB"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
 </LinearLayout>

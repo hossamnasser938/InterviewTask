@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_profile.*
 
@@ -24,6 +25,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     fun getPersonProfile() {
+        // show loading progress bar
+        showLoadingPB()
+
         // get to the node where we want to read from
         val testReference = database.child("test")
 
@@ -32,6 +36,9 @@ class ProfileActivity : AppCompatActivity() {
             //specify what to do when data is fetched successfully
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d( TAG, "successfully fetched user profile" )
+                // hide loading PB
+                hideLoadingPB()
+
                 // Construct a Person object
                 val person = snapshot.getValue(Person::class.java)
 
@@ -42,6 +49,9 @@ class ProfileActivity : AppCompatActivity() {
             // specify what to do when a failure occurs while fetching data
             override fun onCancelled(error: DatabaseError) {
                 Log.d( TAG, "Error occurs while fetching user profile" )
+                // hide loading PB
+                hideLoadingPB()
+
                 // show error message for the user
                 showErrorMessage()
             }
@@ -67,5 +77,13 @@ class ProfileActivity : AppCompatActivity() {
     private fun showErrorMessage() {
         person_info.text = Constants.ERROR_GETTING_PERSON
         person_info.setTextColor(Color.RED)
+    }
+
+    private fun showLoadingPB() {
+        profile_loading_PB.visibility = View.VISIBLE
+    }
+
+    private fun hideLoadingPB() {
+        profile_loading_PB.visibility = View.GONE
     }
 }
