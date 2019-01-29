@@ -145,14 +145,6 @@ class UpdateNumberActivity : AppCompatActivity() {
     }
 
     private fun verifyNumber( number : String ) {
-        // send verification code
-        PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                number,
-                60,               // Timeout duration
-                TimeUnit.SECONDS, // Unit of timeout
-                this,             // Activity (for callback binding)
-                verificationCallback) // OnVerificationStateChangedCallbacks
-
         // define the callback
         verificationCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -176,6 +168,14 @@ class UpdateNumberActivity : AppCompatActivity() {
                 showVerificationCodeLayout()
             }
         }
+
+        // send verification code
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                number,
+                60,               // Timeout duration
+                TimeUnit.SECONDS, // Unit of timeout
+                this,             // Activity (for callback binding)
+                verificationCallback) // OnVerificationStateChangedCallbacks
     }
 
     private fun handleVerifyCodeButton() {
