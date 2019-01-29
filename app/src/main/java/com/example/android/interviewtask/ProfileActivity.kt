@@ -4,7 +4,10 @@ import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_profile.*
 
@@ -12,6 +15,35 @@ class ProfileActivity : AppCompatActivity() {
 
     val TAG = "ProfileActivity"
     lateinit var database: DatabaseReference
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // inflate the menu
+        menuInflater.inflate(R.menu.profile_menu, menu)
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val itemId = item?.itemId
+        if ( itemId == R.id.sign_out_menu_btn ) {
+            Log.d( TAG, "sign out" )
+            // sign user out
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+
+            // close the app
+            finishAffinity()
+        }
+        else if ( itemId == R.id.update_number_menu_btn ) {
+            Log.d( TAG, "update phone number" )
+            // TODO: update phone number
+        }
+        else {
+            Log.d( TAG, "strange menu item" )
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
