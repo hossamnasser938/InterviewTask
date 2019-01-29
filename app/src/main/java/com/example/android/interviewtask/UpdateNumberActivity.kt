@@ -93,7 +93,7 @@ class UpdateNumberActivity : AppCompatActivity() {
         check_old_number_btn.setOnClickListener {
             hideErrorOldNumber()
 
-            val numberEntered = old_number_edit_text.text.toString()
+            val numberEntered = old_number_edit_text.text.toString().trim()
 
             // check if empty
             if( numberEntered.isEmpty() ) {
@@ -121,7 +121,7 @@ class UpdateNumberActivity : AppCompatActivity() {
         update_new_number_btn.setOnClickListener {
             hideErrorNewNumber()
 
-            val numberEntered = new_number_edit_text.text.toString()
+            val numberEntered = new_number_edit_text.text.toString().trim()
 
             // check if empty
             if( numberEntered.isEmpty() ) {
