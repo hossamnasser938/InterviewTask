@@ -13,7 +13,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_margin="@dimen/default_16">
+        android:layout_margin="@dimen/default_16"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"
@@ -70,6 +71,42 @@
 
         <TextView
             android:id="@+id/new_number_error_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:textColor="@color/colorRed" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/verification_code_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/default_16"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:text="@string/enter_verification_code" />
+
+        <EditText
+            android:id="@+id/verification_code_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/verify_verifiction_code_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/verify" />
+
+        <TextView
+            android:id="@+id/verification_code_error_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"

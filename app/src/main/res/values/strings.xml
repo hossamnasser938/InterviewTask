@@ -4,8 +4,13 @@
     <string name="update_phone_number">Update Phone Number</string>
     <string name="enter_old_number">Enter Old Phone Number</string>
     <string name="enter_new_number">Enter New Phone Number</string>
+    <string name="enter_verification_code">Enter Verification Code</string>
     <string name="check">Check</string>
     <string name="update">Update</string>
+    <string name="verify">Verify</string>
     <string name="enter_number">Enter Number</string>
     <string name="wrong_number">Wrong Number</string>
+    <string name="the_same_old_number">The same old number</string>
+    <string name="success_update">Successfully updated</string>
+    <string name="failure_update">Failed to update</string>
 </resources>

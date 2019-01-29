@@ -1,5 +1,6 @@
 package com.example.android.interviewtask
 
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -37,45 +38,61 @@ class UpdateNumberActivity : AppCompatActivity() {
 
         handleCheckOldNumberButton()
         handleUpdateNewNumberButton()
+        handleVerifyCodeButton()
     }
 
     override fun onStart() {
         super.onStart()
+        Log.d( TAG, "on start" )
+        Log.d( TAG, "verification in progress $verificationInProgress and new number $newNumber" )
 
         // check if verification is in progress
         if( verificationInProgress ) {
+            showVerificationCodeLayout()
             verifyNumber( newNumber!! )
+        }
+        else {
+            showOldNumberLayout()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
+        Log.d( TAG, "on save instance state" )
 
         if ( verificationInProgress ) {
+            Log.d( TAG, "verification in progress $verificationInProgress" )
             outState?.putBoolean( Constants.VERRIFICATION_IN_PROGRESS, verificationInProgress )
         }
 
         if ( newNumber != null ) {
+            Log.d( TAG, "new number $newNumber" )
             outState?.putString( Constants.NEW_NUMBER, newNumber )
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
+        Log.d( TAG, "on restore instance state" )
 
         if ( savedInstanceState != null ) {
+            Log.d( TAG, "saved instance state is not null" )
             if ( savedInstanceState.containsKey(Constants.VERRIFICATION_IN_PROGRESS) ) {
                 verificationInProgress = savedInstanceState.getBoolean(Constants.VERRIFICATION_IN_PROGRESS)
+                Log.d( TAG, "saved instance state contains verification in progress $verificationInProgress" )
             }
 
             if ( savedInstanceState.containsKey(Constants.NEW_NUMBER) ) {
                 newNumber = savedInstanceState.getString(Constants.NEW_NUMBER)
+                Log.d( TAG, "saved instance state contains new number $newNumber" )
             }
         }
     }
 
     private fun handleCheckOldNumberButton() {
         check_old_number_btn.setOnClickListener {
+            hideErrorOldNumber()
+
             val numberEntered = old_number_edit_text.text.toString()
 
             // check if empty
@@ -92,10 +109,6 @@ class UpdateNumberActivity : AppCompatActivity() {
                     numberEntered.equals( currentUserNumberWithoutKey, false ) ) {
                 // show fields for new number
                 showNewNumberLayout()
-
-                hideErrorOldNumber()
-
-                stopRespondingToOldNumber()
             }
             else {
                 showErrorOnOldNumber( R.string.wrong_number )
@@ -106,11 +119,23 @@ class UpdateNumberActivity : AppCompatActivity() {
 
     private fun handleUpdateNewNumberButton() {
         update_new_number_btn.setOnClickListener {
+            hideErrorNewNumber()
+
             val numberEntered = new_number_edit_text.text.toString()
 
             // check if empty
             if( numberEntered.isEmpty() ) {
                 showErrorOnNewNumber( R.string.enter_number )
+                return@setOnClickListener
+            }
+
+            val currentUserNumber = currentUser?.phoneNumber
+            val currentUserNumberWithoutKey = currentUserNumber?.substring(2)
+
+            // Compare entered and old user numbers
+            if( numberEntered.equals( currentUserNumber, false ) or
+                    numberEntered.equals( currentUserNumberWithoutKey, false ) ) {
+                showErrorOnNewNumber( R.string.the_same_old_number )
                 return@setOnClickListener
             }
 
@@ -120,10 +145,7 @@ class UpdateNumberActivity : AppCompatActivity() {
     }
 
     private fun verifyNumber( number : String ) {
-        // set the flag to reflect the progress state
-        verificationInProgress = true
-
-        // verify number
+        // send verification code
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
                 60,               // Timeout duration
@@ -147,17 +169,56 @@ class UpdateNumberActivity : AppCompatActivity() {
                 Log.d( TAG, "onCodeSent" )
                 verificationId = id
                 resendingToken = token
+
+                // set the flag to reflect the progress state
+                verificationInProgress = true
+
+                showVerificationCodeLayout()
             }
         }
     }
 
-    private fun stopRespondingToOldNumber() {
-        check_old_number_btn.isClickable = false
-        old_number_edit_text.isClickable = false
+    private fun handleVerifyCodeButton() {
+        verify_verifiction_code_btn.setOnClickListener {
+            hideErrorVerificationCode()
+
+            val codeEntered = verification_code_edit_text.text.toString()
+
+            // check if empty
+            if( codeEntered.isEmpty() ) {
+                showErrorOnVerificationCode( R.string.enter_number )
+            }
+
+            // construct the credential
+            val phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId!!, codeEntered)
+
+            currentUser?.updatePhoneNumber(phoneAuthCredential)?.addOnSuccessListener {
+                Log.d( TAG, "successful update" )
+                showSuccessUpdate()
+            }?.addOnFailureListener {
+                Log.d( TAG, "failed to update" )
+                showFailureUpdate()
+            }
+        }
+    }
+
+    private fun showOldNumberLayout() {
+        old_number_layout.visibility = View.VISIBLE
+        new_number_layout.visibility = View.GONE
+        verification_code_layout.visibility = View.GONE
     }
 
     private fun showNewNumberLayout() {
         new_number_layout.visibility = View.VISIBLE
+        old_number_layout.visibility = View.GONE
+        verification_code_layout.visibility = View.GONE
+    }
+
+    private fun showVerificationCodeLayout() {
+        verification_code_layout.visibility = View.VISIBLE
+        old_number_layout.visibility = View.GONE
+        new_number_layout.visibility = View.GONE
+
     }
 
     private fun showErrorOnOldNumber( stringId: Int ) {
@@ -170,11 +231,30 @@ class UpdateNumberActivity : AppCompatActivity() {
         new_number_error_text.text = resources.getString( stringId )
     }
 
+    private fun showErrorOnVerificationCode( stringId: Int ) {
+        verification_code_error_text.visibility = View.VISIBLE
+        verification_code_error_text.text = resources.getString( stringId )
+    }
+
     private fun hideErrorOldNumber() {
         old_number_error_text.visibility = View.GONE
     }
 
     fun hideErrorNewNumber() {
         new_number_error_text.visibility = View.GONE
+    }
+
+    fun hideErrorVerificationCode() {
+        verification_code_error_text.visibility = View.GONE
+    }
+
+    private fun showSuccessUpdate() {
+        showErrorOnVerificationCode( R.string.success_update )
+        verification_code_error_text.setTextColor( Color.GREEN )
+    }
+
+    private fun showFailureUpdate() {
+        showErrorOnVerificationCode( R.string.failure_update )
+        verification_code_error_text.setTextColor( Color.RED )
     }
 }
