@@ -1,5 +1,6 @@
 package com.example.android.interviewtask
 
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -36,7 +37,9 @@ class ProfileActivity : AppCompatActivity() {
         }
         else if ( itemId == R.id.update_number_menu_btn ) {
             Log.d( TAG, "update phone number" )
-            // TODO: update phone number
+            // navigate to update phone number activity
+            val intent = Intent(this, UpdateNumberActivity::class.java)
+            startActivity(intent)
         }
         else {
             Log.d( TAG, "strange menu item" )
