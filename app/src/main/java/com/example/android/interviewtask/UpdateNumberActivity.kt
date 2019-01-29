@@ -36,17 +36,24 @@ class UpdateNumberActivity : AppCompatActivity() {
             }
 
             val currentUserNumber = currentUser?.phoneNumber
+            val currentUserNumberWithoutKey = currentUserNumber?.substring(2)
 
             // Compare entered and user numbers
-            if( numberEntered.equals( currentUserNumber, false ) ) {
+            if( numberEntered.equals( currentUserNumber, false ) or
+                    numberEntered.equals( currentUserNumberWithoutKey, false ) ) {
                 // show fields for new number
                 showNewNumberLayout()
+
+                hideErrorOldNumber()
+
+                stopRespondingToOldNumber()
             }
             else {
                 showErrorOnOldNumber( R.string.wrong_number )
             }
         }
     }
+
 
     fun handleUpdateNewNumberButton() {
         update_new_number_btn.setOnClickListener {
@@ -62,6 +69,11 @@ class UpdateNumberActivity : AppCompatActivity() {
         }
     }
 
+    private fun stopRespondingToOldNumber() {
+        check_old_number_btn.isClickable = false
+        old_number_edit_text.isClickable = false
+    }
+
     fun showNewNumberLayout() {
         new_number_layout.visibility = View.VISIBLE
     }
@@ -74,5 +86,13 @@ class UpdateNumberActivity : AppCompatActivity() {
     fun showErrorOnNewNumber( stringId: Int ) {
         new_number_error_text.visibility = View.VISIBLE
         new_number_error_text.text = resources.getString( stringId )
+    }
+
+    fun hideErrorOldNumber() {
+        old_number_error_text.visibility = View.GONE
+    }
+
+    fun hideErrorNewNumber() {
+        new_number_error_text.visibility = View.GONE
     }
 }
